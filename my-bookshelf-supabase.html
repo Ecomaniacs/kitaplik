@@ -95,6 +95,29 @@
     width: 82px; height: 120px; object-fit: cover; border-radius: 6px;
     border: 1px solid var(--line); flex-shrink: 0; background: #ede6d4;
   }
+  .cover-button { border: 0; background: none; padding: 0; cursor: pointer; border-radius: 10px; line-height: 0; }
+  .cover-button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .cover-button:hover .cover-img { transform: translateY(-2px); box-shadow: 0 8px 18px rgba(0,0,0,.16); }
+  .cover-img { transition: transform .15s, box-shadow .15s; }
+  .book-detail-page { max-width: 900px; margin: 0 auto; }
+  .book-detail-panel { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; box-shadow: var(--shadow); }
+  .book-detail-back { margin-bottom: 16px; }
+  .book-detail-head { display:flex; gap:18px; align-items:flex-start; margin-bottom:18px; }
+  .book-detail-cover { width:120px; max-height:180px; object-fit:cover; border-radius:10px; border:1px solid var(--line); flex:0 0 auto; }
+  .book-detail-main { min-width:0; flex:1; }
+  .book-detail-main h2 { margin-bottom:5px; }
+  .book-detail-author { color:var(--muted); margin:0 0 8px; }
+  .detail-section { border-top:1px dashed var(--line); padding-top:14px; margin-top:14px; }
+  .detail-section h3 { margin:0 0 8px; font-size:15px; }
+  .detail-summary { white-space:pre-line; line-height:1.6; color:var(--ink); }
+  .detail-highlight-list { display:flex; flex-direction:column; gap:8px; }
+  .detail-highlight { background:#fbf7ec; border-left:3px solid var(--accent); border-radius:0 8px 8px 0; padding:9px 10px; }
+  .detail-highlight .hl-text { margin:0 0 4px; }
+  .detail-highlight .hl-note { margin:0 0 5px; }
+  .detail-highlight .hl-meta { display:flex; justify-content:space-between; align-items:center; }
+  .detail-footer { display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap; border-top:1px solid var(--line); padding-top:16px; margin-top:18px; }
+  .detail-actions { display:flex; gap:7px; }
+
   .card-info { flex: 1; display: flex; flex-direction: column; gap: 4px; min-width: 0; }
   .title { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 18px; line-height: 1.3; }
   .author { margin: 0; color: var(--muted); font-size: 13.5px; }
@@ -113,12 +136,12 @@
 
   .meta-details { font-size: 12px; color: var(--muted); display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
 
-  .summary {
-    background: #f7f2e6; border: 1px solid var(--line); border-radius: 10px;
-    padding: 10px 12px; font-size: 13.5px; line-height: 1.5;
+  .summary-trigger, .hl-trigger {
+    display: inline-flex; align-items: center; gap: 6px; width: fit-content;
+    border: 1px solid var(--line); background: #f7f2e6; color: var(--accent);
+    padding: 7px 10px; border-radius: 8px; font-size: 13px; cursor: pointer;
   }
-  .summary p { margin: 0 0 4px; white-space: pre-line; }
-  .summary.clamped p { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+  .summary-trigger:hover, .hl-trigger:hover { background: #eee5d3; }
   .linkish { border: 0; background: none; padding: 0; color: var(--accent); font-size: 13px; cursor: pointer; }
   .linkish:hover { text-decoration: underline; }
 
@@ -131,8 +154,10 @@
   .hl-text { margin: 0 0 4px; font-size: 13.5px; line-height: 1.45; font-family: Georgia, serif; font-style: italic; }
   .hl-note { margin: 0 0 4px; font-size: 12.5px; color: var(--muted); }
   .hl-meta { display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--muted); }
+  .hl-buttons { display: flex; gap: 3px; }
   .icon { border: 0; background: none; color: var(--muted); cursor: pointer; font-size: 15px; line-height: 1; padding: 2px 6px; border-radius: 6px; }
-  .icon:hover { color: var(--danger); background: #fbeae7; }
+  .icon:hover { color: var(--accent); background: #f1e8d8; }
+  .icon.danger:hover { color: var(--danger); background: #fbeae7; }
   .hl-form { display: flex; flex-direction: column; gap: 6px; }
   .hl-form textarea, .hl-form input {
     font: inherit; font-size: 13px; color: var(--ink);
@@ -195,6 +220,11 @@
     outline: 2px solid rgba(176,73,31,.3); border-color: var(--accent);
   }
   .modal-actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+  .modal-subtitle { color: var(--muted); font-size: 13px; margin: -6px 0 14px; }
+  .hl-modal-list { display: flex; flex-direction: column; gap: 10px; max-height: 60vh; overflow: auto; }
+  .hl-modal-item { background: #fbf7ec; border-left: 3px solid var(--accent); border-radius: 0 9px 9px 0; padding: 10px 12px; }
+  .hl-modal-item .hl-text { white-space: pre-line; }
+  .hl-modal-item .hl-note { white-space: pre-line; }
 
   /* Toast */
   .toast {
@@ -239,7 +269,12 @@
     <button id="add-btn" class="btn primary">＋ Add book</button>
   </div>
   <p id="stats" class="stats-line"></p>
-  <div id="grid" class="grid"></div></main><footer>Data is stored in this browser via localStorage — export a backup if the shelf matters to you.</footer><!-- Add / edit modal --><div id="overlay" class="overlay hidden">
+  <div id="grid" class="grid"></div>
+  <section id="book-detail-page" class="book-detail-page hidden" aria-live="polite">
+    <button type="button" class="btn book-detail-back" data-action="close-book-detail">← Back to bookshelf</button>
+    <div id="book-detail-content" class="book-detail-panel"></div>
+  </section>
+</main><footer>@Copyright 2026</footer><!-- Add / edit modal --><div id="overlay" class="overlay hidden">
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
     <h2 id="modal-title">Add a book</h2>
     <form id="book-form">
@@ -305,7 +340,45 @@
         <button type="submit" class="btn primary">Save book</button>
       </div>
     </form>
-  </div></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  </div></div>
+
+  <div id="highlight-overlay" class="overlay hidden">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="highlight-modal-title">
+      <h2 id="highlight-modal-title">Highlights</h2>
+      <p id="highlight-modal-subtitle" class="modal-subtitle"></p>
+      <div id="highlight-modal-list" class="hl-modal-list"></div>
+      <form id="highlight-form" class="hl-form">
+        <textarea name="text" rows="3" required maxlength="600" placeholder="Paste the line you want to keep…"></textarea>
+        <input name="note" maxlength="200" placeholder="Note (optional)">
+        <div class="hl-actions">
+          <button type="submit" class="btn primary sm">Add highlight</button>
+          <button type="button" class="btn subtle sm" data-action="close-highlight-modal">Close</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="summary-overlay" class="overlay hidden">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="summary-modal-title">
+      <h2 id="summary-modal-title">Summary</h2>
+      <p id="summary-modal-subtitle" class="modal-subtitle"></p>
+      <div id="summary-modal-text" class="summary" style="white-space:pre-line;line-height:1.6"></div>
+      <div class="modal-actions"><button type="button" class="btn primary" data-action="close-summary-modal">Close</button></div>
+    </div>
+  </div>
+
+  <div id="confirm-overlay" class="overlay hidden">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
+      <h2 id="confirm-title">Confirm deletion</h2>
+      <p id="confirm-message" class="modal-subtitle"></p>
+      <div class="modal-actions">
+        <button type="button" class="btn" data-action="cancel-confirm">Cancel</button>
+        <button type="button" class="btn primary" data-action="confirm-delete">Yes, delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 "use strict";
 
@@ -317,10 +390,12 @@ const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_
   unread:  { label: "Want to read", short: "Want" },
   reading: { label: "Reading",      short: "Reading" },
   read:    { label: "Read",         short: "Read" },
-};let state = { version: 1, books: [] };let ui = { tab: "all", query: "", sort: "recent", editingId: null };let modalRating = 0;let refocusHighlight = null;let toastTimer = null;const $= (s) => document.querySelector(s);const grid =$("#grid"), searchEl = $("#search"), sortEl = $("#sort"),
+};let state = { version: 1, books: [] };let ui = { tab: "all", query: "", sort: "recent", editingId: null, detailBookId: null };let modalRating = 0;let refocusHighlight = null;let toastTimer = null;let highlightBookId = null;let editingHighlightId = null;let pendingDelete = null;const $= (s) => document.querySelector(s);const grid =$("#grid"), searchEl = $("#search"), sortEl = $("#sort"),
       statsEl = $("#stats"), overlay = $("#overlay"),
       bookForm = $("#book-form"), starsEl = $("#modal-stars"),
-      fileInput = $("#file-input");/* ---------- Utilities ---------- */const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);const esc = (s) => String(s ?? "").replace(/[&<>"']/g,
+      fileInput = $("#file-input"), highlightForm = $("#highlight-form"),
+      highlightOverlay = $("#highlight-overlay"), summaryOverlay = $("#summary-overlay"),
+      confirmOverlay = $("#confirm-overlay"), detailPage = $("#book-detail-page");/* ---------- Utilities ---------- */const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);const esc = (s) => String(s ?? "").replace(/[&<>"']/g,
   (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));const fmtDate = (ts) => new Date(ts).toLocaleDateString(undefined,
   { year: "numeric", month: "short", day: "numeric" });function toast(msg) {
   let t = $("#toast");
@@ -552,9 +627,6 @@ function normalizeBook(b) {
   return [...list].sort(sorters[ui.sort] || sorters.recent);
 }function cardHTML(b) {
   const s = STATUS[b.status] || STATUS.unread;
-  const hls = b.highlights || [];
-  const sum = (b.summary || "").trim();
-  const long = sum.length > 180;
   const stars = [1, 2, 3, 4, 5].map((i) =>
     `<button type="button" class="star${i <= b.rating ? " on" : ""}" data-action="star" data-star="${i}" aria-label="Rate ${i} out of 5">★</button>`
   ).join("");
@@ -569,65 +641,20 @@ function normalizeBook(b) {
     </div>
     
     <div class="card-body">
-      <img class="cover-img" src="${b.coverUrl ? esc(b.coverUrl) : placeholderSvg}" 
-           onerror="this.src='${placeholderSvg}'" alt="Cover of ${esc(b.title)}">
+      <button type="button" class="cover-button" data-action="open-book" aria-label="Open ${esc(b.title)}">
+        <img class="cover-img" src="${b.coverUrl ? esc(b.coverUrl) : placeholderSvg}" 
+             onerror="this.src='${placeholderSvg}'" alt="Cover of ${esc(b.title)}">
+      </button>
       <div class="card-info">
         <h3 class="title">${esc(b.title)}</h3>
         <p class="author">
           ${b.author ? `<span class="filter-link" data-action="filter" data-val="${esc(b.author)}">${esc(b.author)}</span>` : '<span class="dim">unknown author</span>'}
         </p>
         ${b.genre ? `<span class="genre-tag" data-action="filter" data-val="${esc(b.genre)}">${esc(b.genre)}</span>` : ""}
-        
-        <div class="meta-details">
-          ${b.publisher ? `<span>Publisher: <strong class="filter-link" data-action="filter" data-val="${esc(b.publisher)}">${esc(b.publisher)}</strong></span>` : ""}
-          ${b.pubDate ? `<span>(${esc(b.pubDate)})</span>` : ""}
-          ${b.pages ? `<span>· ${b.pages} pages</span>` : ""}
-          ${b.isbn ? `<span>· ISBN: ${esc(b.isbn)}</span>` : ""}
-        </div>
       </div>
     </div>
 
-    ${sum
-      ? `<div class="summary${long ? " clamped" : ""}">
-           <p>${esc(sum)}</p>${long ? '<button type="button" class="linkish" data-action="toggle-summary">Show more</button>' : ""}
-         </div>`
-      : '<p class="dim">No summary yet — use Edit to add one.</p>'}
-    
-    <div class="hl-block">
-      <div class="hl-head">
-        <span class="hl-count">${hls.length} highlight${hls.length === 1 ? "" : "s"}</span>
-        <button type="button" class="btn subtle sm" data-action="toggle-hl-form">＋ Add highlight</button>
-      </div>
-      <ul class="hl-list">
-        ${hls.map((h) => `
-        <li class="hl">
-          <p class="hl-text">${esc(h.text)}</p>${h.note ? `<p class="hl-note">${esc(h.note)}</p>` : ""}
-          <span class="hl-meta">
-            <span>${fmtDate(h.ts)}</span>
-            <button type="button" class="icon" data-action="del-hl" data-hl="${h.id}" aria-label="Delete highlight">×</button>
-          </span>
-        </li>`).join("")}
-      </ul>
-      <form class="hl-form hidden" data-form="hl">
-        <textarea name="text" rows="2" required maxlength="600" placeholder="Paste the line you want to keep…"></textarea>
-        <input name="note" maxlength="200" placeholder="Note (optional)">
-        <div class="hl-actions">
-          <button type="submit" class="btn primary sm">Add</button>
-          <button type="button" class="btn subtle sm" data-action="cancel-hl">Cancel</button>
-        </div>
-      </form>
-    </div>
-    <div class="card-foot">
-      <div class="seg" role="group" aria-label="Reading status">
-        ${Object.keys(STATUS).map((k) =>
-          `<button type="button" class="seg-btn ${k}${b.status === k ? " active" : ""}" data-action="status" data-status="${k}">${STATUS[k].short}</button>`
-        ).join("")}
-      </div>
-      <div class="actions">
-        <button type="button" class="btn subtle sm" data-action="edit">Edit</button>
-        <button type="button" class="btn danger sm" data-action="delete">Delete</button>
-      </div>
-    </div>
+
   </article>`;
 }function emptyHTML() {
   if (state.books.length === 0) {
@@ -671,6 +698,29 @@ function normalizeBook(b) {
     refocusHighlight = null;
   }
 }/* ---------- Card interactions (delegated) ---------- */
+detailPage.addEventListener("click", (e) => {
+  const el = e.target.closest("[data-action]");
+  if (!el) return;
+  const book = state.books.find(b => b.id === (ui.detailBookId || ""));
+  const action = el.dataset.action;
+  if (action === "close-book-detail") return closeBookDetail();
+  if (!book) return;
+  if (action === "status") {
+    book.status = el.dataset.status;
+    save(); render(); openBookDetail(book);
+  } else if (action === "edit") {
+    closeBookDetail(); openModal(book);
+  } else if (action === "delete") {
+    closeBookDetail(); requestDelete("book", book.id);
+  } else if (action === "open-highlights") {
+    openHighlights(book);
+  } else if (action === "edit-hl") {
+    editHighlight(book, el.dataset.hl);
+  } else if (action === "del-hl") {
+    requestDelete("highlight", book.id, el.dataset.hl);
+  }
+});
+
 grid.addEventListener("click", (e) => {
   const el = e.target.closest("[data-action]");
   if (!el) return;
@@ -693,10 +743,7 @@ grid.addEventListener("click", (e) => {
       if (book) openModal(book);
       break;
     case "delete":
-      if (book && confirm(`Delete “${book.title}” including its highlights?`)) {
-        state.books = state.books.filter((b) => b.id !== book.id);
-        save(); render(); toast("Book deleted");
-      }
+      if (book) requestDelete("book", book.id);
       break;
     case "filter":
       if (el.dataset.val) {
@@ -705,27 +752,21 @@ grid.addEventListener("click", (e) => {
         render();
       }
       break;
-    case "toggle-hl-form": {
-      const f = card.querySelector(".hl-form");
-      f.classList.toggle("hidden");
-      if (!f.classList.contains("hidden")) f.elements["text"].focus();
+    case "open-book":
+      if (book) openBookDetail(book);
       break;
-    }
-    case "cancel-hl":
-      card.querySelector(".hl-form").classList.add("hidden");
+    case "open-highlights":
+      if (book) openHighlights(book);
+      break;
+    case "show-summary":
+      if (book) openSummary(book);
       break;
     case "del-hl":
-      if (book) {
-        book.highlights = book.highlights.filter((h) => h.id !== el.dataset.hl);
-        save(); render(); toast("Highlight removed");
-      }
+      if (book) requestDelete("highlight", book.id, el.dataset.hl);
       break;
-    case "toggle-summary": {
-      const s = el.closest(".summary");
-      s.classList.toggle("clamped");
-      el.textContent = s.classList.contains("clamped") ? "Show more" : "Show less";
+    case "edit-hl":
+      if (book) editHighlight(book, el.dataset.hl);
       break;
-    }
     case "new-book":
       openModal(null);
       break;
@@ -739,19 +780,184 @@ grid.addEventListener("click", (e) => {
   }
 });
 
-grid.addEventListener("submit", (e) => {
-  const f = e.target.closest('form[data-form="hl"]');
-  if (!f) return;
+function openBookDetail(book) {
+  ui.detailBookId = book.id;
+  const placeholderSvg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='180' viewBox='0 0 120 180'%3E%3Crect width='120' height='180' fill='%23ede6d4'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='serif' font-size='34' fill='%23b0491f'%3E📖%3C/text%3E%3C/svg%3E";
+  const s = STATUS[book.status] || STATUS.unread;
+  const highlights = book.highlights || [];
+  const cover = book.coverUrl ? esc(book.coverUrl) : placeholderSvg;
+  $("#book-detail-content").innerHTML = `
+    <div class="book-detail-head">
+      <img class="book-detail-cover" src="${cover}" onerror="this.src='${placeholderSvg}'" alt="Cover of ${esc(book.title)}">
+      <div class="book-detail-main">
+        <span class="badge ${s.cls || book.status}">${s.label}</span>
+        <h2 id="book-detail-title">${esc(book.title)}</h2>
+        <p class="book-detail-author">${esc(book.author || "Unknown author")}</p>
+        ${book.genre ? `<span class="genre-tag">${esc(book.genre)}</span>` : ""}
+        <div class="meta-details" style="margin-top:9px">
+          ${book.publisher ? `<span>Publisher: <strong>${esc(book.publisher)}</strong></span>` : ""}
+          ${book.pubDate ? `<span>(${esc(book.pubDate)})</span>` : ""}
+          ${book.pages ? `<span>· ${book.pages} pages</span>` : ""}
+          ${book.isbn ? `<span>· ISBN: ${esc(book.isbn)}</span>` : ""}
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <h3>Summary</h3>
+      <div class="detail-summary">${esc(book.summary || "No summary yet.")}</div>
+    </div>
+
+    <div class="detail-section">
+      <div class="hl-head">
+        <h3 style="margin:0">Highlights (${highlights.length})</h3>
+        <button type="button" class="btn subtle sm" data-action="open-highlights">＋ Add / edit highlights</button>
+      </div>
+      <div class="detail-highlight-list" style="margin-top:9px">
+        ${highlights.length ? highlights.map(h => `
+          <div class="detail-highlight">
+            <p class="hl-text">${esc(h.text)}</p>
+            ${h.note ? `<p class="hl-note">${esc(h.note)}</p>` : ""}
+            <div class="hl-meta"><span>${fmtDate(h.ts)}</span><span class="hl-buttons">
+              <button type="button" class="icon" data-action="edit-hl" data-hl="${h.id}" aria-label="Edit highlight">✎</button>
+              <button type="button" class="icon danger" data-action="del-hl" data-hl="${h.id}" aria-label="Delete highlight">×</button>
+            </span></div>
+          </div>`).join("") : `<p class="dim">No highlights yet.</p>`}
+      </div>
+    </div>
+
+    <div class="detail-footer">
+      <div class="seg" role="group" aria-label="Reading status">
+        ${Object.keys(STATUS).map(k => `<button type="button" class="seg-btn ${k}${book.status === k ? " active" : ""}" data-action="status" data-status="${k}">${STATUS[k].short}</button>`).join("")}
+      </div>
+      <div class="detail-actions">
+        <button type="button" class="btn subtle sm" data-action="edit">Edit</button>
+        <button type="button" class="btn danger sm" data-action="delete">Delete</button>
+        <button type="button" class="btn sm" data-action="close-book-detail">Close</button>
+      </div>
+    </div>`;
+  grid.classList.add("hidden");
+  document.querySelector(".toolbar").classList.add("hidden");
+  statsEl.classList.add("hidden");
+  detailPage.classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function closeBookDetail() {
+  ui.detailBookId = null;
+  detailPage.classList.add("hidden");
+  grid.classList.remove("hidden");
+  document.querySelector(".toolbar").classList.remove("hidden");
+  statsEl.classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function openHighlights(book) {
+  highlightBookId = book.id;
+  editingHighlightId = null;
+  $("#highlight-modal-title").textContent = "Highlights";
+  $("#highlight-modal-subtitle").textContent = book.title;
+  highlightForm.reset();
+  renderHighlightModal();
+  highlightOverlay.classList.remove("hidden");
+}
+
+function closeHighlightModal() {
+  highlightOverlay.classList.add("hidden");
+  highlightBookId = null;
+  editingHighlightId = null;
+  highlightForm.reset();
+}
+
+function renderHighlightModal() {
+  const book = state.books.find(b => b.id === highlightBookId);
+  if (!book) return closeHighlightModal();
+  $("#highlight-modal-list").innerHTML = book.highlights.length ? book.highlights.map(h => `
+    <div class="hl-modal-item">
+      <p class="hl-text">${esc(h.text)}</p>
+      ${h.note ? `<p class="hl-note">${esc(h.note)}</p>` : ""}
+      <div class="hl-meta">
+        <span>${fmtDate(h.ts)}</span>
+        <span class="hl-buttons">
+          <button type="button" class="icon" data-action="edit-hl" data-hl="${h.id}" aria-label="Edit highlight">✎</button>
+          <button type="button" class="icon danger" data-action="del-hl" data-hl="${h.id}" aria-label="Delete highlight">×</button>
+        </span>
+      </div>
+    </div>`).join("") : `<p class="dim">No highlights yet.</p>`;
+}
+
+function editHighlight(book, id) {
+  const h = book.highlights.find(x => String(x.id) === String(id));
+  if (!h) return;
+  editingHighlightId = h.id;
+  highlightForm.elements["text"].value = h.text;
+  highlightForm.elements["note"].value = h.note || "";
+  highlightForm.querySelector('button[type="submit"]').textContent = "Save changes";
+  highlightForm.elements["text"].focus();
+}
+
+function openSummary(book) {
+  $("#summary-modal-title").textContent = "Summary";
+  $("#summary-modal-subtitle").textContent = book.title;
+  $("#summary-modal-text").textContent = book.summary || "No summary yet.";
+  summaryOverlay.classList.remove("hidden");
+}
+
+function requestDelete(type, bookId, highlightId = null) {
+  pendingDelete = { type, bookId, highlightId };
+  const book = state.books.find(b => b.id === bookId);
+  $("#confirm-title").textContent = type === "highlight" ? "Delete highlight?" : "Delete book?";
+  $("#confirm-message").textContent = type === "highlight"
+    ? "Are you sure you want to delete this highlight?"
+    : `Are you sure you want to delete “${book?.title || "this book"}” including its highlights?`;
+  confirmOverlay.classList.remove("hidden");
+}
+
+function closeConfirm() { pendingDelete = null; confirmOverlay.classList.add("hidden"); }
+
+function performDelete() {
+  if (!pendingDelete) return;
+  const { type, bookId, highlightId } = pendingDelete;
+  const book = state.books.find(b => b.id === bookId);
+  if (type === "highlight" && book) {
+    book.highlights = book.highlights.filter(h => String(h.id) !== String(highlightId));
+    closeConfirm(); render(); renderHighlightModal(); save(); toast("Highlight removed");
+  } else if (type === "book") {
+    state.books = state.books.filter(b => b.id !== bookId);
+    closeConfirm(); closeHighlightModal(); render(); save(); toast("Book deleted");
+  }
+}
+
+highlightForm.addEventListener("submit", (e) => {
   e.preventDefault();
-  const card = f.closest("[data-book-id]");
-  const book = state.books.find((b) => b.id === card.dataset.bookId);
+  const book = state.books.find(b => b.id === highlightBookId);
   if (!book) return;
-  const text = f.elements["text"].value.trim();
-  const note = f.elements["note"].value.trim();
+  const text = highlightForm.elements["text"].value.trim();
+  const note = highlightForm.elements["note"].value.trim();
   if (!text) return;
-  book.highlights.unshift({ id: uid(), text, note, ts: Date.now() });
-  refocusHighlight = book.id;
-  save(); render(); toast("Highlight added");
+  if (editingHighlightId) {
+    const h = book.highlights.find(x => String(x.id) === String(editingHighlightId));
+    if (h) { h.text = text; h.note = note; }
+    toast("Highlight updated");
+  } else {
+    book.highlights.unshift({ id: uid(), text, note, ts: Date.now() });
+    toast("Highlight added");
+  }
+  editingHighlightId = null;
+  highlightForm.reset();
+  highlightForm.querySelector('button[type="submit"]').textContent = "Add highlight";
+  save(); render(); renderHighlightModal();
+});
+
+highlightOverlay.addEventListener("click", e => {
+  if (e.target === highlightOverlay || e.target.closest('[data-action="close-highlight-modal"]')) closeHighlightModal();
+});
+summaryOverlay.addEventListener("click", e => {
+  if (e.target === summaryOverlay || e.target.closest('[data-action="close-summary-modal"]')) summaryOverlay.classList.add("hidden");
+});
+confirmOverlay.addEventListener("click", e => {
+  if (e.target === confirmOverlay || e.target.closest('[data-action="cancel-confirm"]')) closeConfirm();
+  if (e.target.closest('[data-action="confirm-delete"]')) performDelete();
 });
 
 /* ---------- Modal ---------- */
